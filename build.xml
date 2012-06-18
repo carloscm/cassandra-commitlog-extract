@@ -1,0 +1,78 @@
+<?xml version="1.0" ?>
+<project name="Cassandra ETL Agent" default="default">
+    
+    <property name="lib.home" value="lib"/>
+    <property name="hector.dir" location="lib/hector-core-1.0-3"/>    
+    <property name="apache-commons.dir" location="lib/apache-commons"/>
+    <property name="jackson.dir" location="lib/jackson-2.0.0"/>
+    <property name="jdbc.dir" location="lib/jdbc"/>
+
+    <property name="build.dir" location="build/"/>
+    <property name="src.dir" location="agent"/>
+    
+    <path id="project.classpath">
+        <fileset dir="${hector.dir}">
+            <include name="*.jar"/>
+        </fileset>        
+        <fileset dir="${apache-commons.dir}">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${jackson.dir}">
+            <include name="*.jar"/>
+        </fileset>        
+        <fileset dir="${jdbc.dir}">
+            <include name="*.jar"/>
+        </fileset>        
+        <pathelement location="${build.dir}"/>
+    </path>
+
+    <path id="libs.project">
+        <fileset dir="${hector.dir}">
+            <include name="*.jar"/>
+        </fileset>        
+        <fileset dir="${apache-commons.dir}">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${jackson.dir}">
+            <include name="*.jar"/>
+        </fileset>        
+        <fileset dir="${jdbc.dir}">
+            <include name="*.jar"/>
+        </fileset>        
+        <pathelement location="${build.dir}"/>
+       
+    </path>
+    
+    <!-- create a property containing all .jar files, prefix lib/, and seperated with a space -->
+	<pathconvert property="libs.project" pathsep=":">
+	  <mapper>
+	    <chainedmapper>	
+	      <!-- remove absolute path -->
+	      <flattenmapper />	
+	      <!-- add lib/ prefix -->
+	      <globmapper from="*" to="*" />	      
+	    </chainedmapper>
+	  </mapper>	
+	  <path>	
+	    <!-- lib.home contains all jar files, in several subdirectories -->
+	    <fileset dir="${lib.home}">
+	      <include name="**/*.jar" />
+	    </fileset>
+	  </path>
+	</pathconvert>
+	
+    <target name="default" depends="clean,build"/>
+    
+    <target name="clean">
+        <delete failonerror="false" dir="${build.dir}"/>
+    </target>
+    
+    <target name="build">
+        <mkdir dir="${build.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${build.dir}" debug="true" includeAntRuntime="true" target="1.6" verbose="yes">
+            <compilerarg value="-Xlint"/>
+            <classpath refid="project.classpath"/>
+        </javac>
+    </target>
+
+</project>
